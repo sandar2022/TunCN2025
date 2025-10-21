@@ -1,0 +1,7 @@
+streamlit
+gtts
+requests
+pandas
+pytesseract
+Pillow
+google-cloud-translate
