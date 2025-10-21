@@ -332,7 +332,7 @@ def get_word_details(word):
     return st.session_state.word_details[word]
 
 def display_word_details(word):
-    """Display detailed information for a single word"""
+    """Display detailed information for a single word with iPhone-friendly audio"""
     details = get_word_details(word)
     
     col1, col2 = st.columns([2, 1])
@@ -345,16 +345,35 @@ def display_word_details(word):
     
     with col2:
         st.subheader("🎵 Pronunciation")
-        audio_buffer = generate_audio(word)
-        if audio_buffer:
-            st.audio(audio_buffer, format='audio/mp3')
-            st.download_button(
-                "📥 Download Audio",
-                audio_buffer.getvalue(),
-                file_name=f"{word}_pronunciation.mp3",
-                mime="audio/mp3",
-                key=f"audio_{word}"
-            )
+        
+        # Play button triggers audio generation
+        play_button_key = f"play_{word}"
+        if st.button(f"▶️ Play {word}", key=play_button_key):
+            audio_buffer = generate_audio(word)
+            if audio_buffer:
+                audio_buffer.seek(0)
+                # Streamlit native audio
+                st.audio(audio_buffer, format='audio/mp3')
+                
+                # Download button
+                st.download_button(
+                    "📥 Download Audio",
+                    audio_buffer.getvalue(),
+                    file_name=f"{word}_pronunciation.mp3",
+                    mime="audio/mp3",
+                    key=f"download_{word}"
+                )
+                
+                # Optional HTML audio fallback for iOS
+                audio_base64 = base64.b64encode(audio_buffer.getvalue()).decode("utf-8")
+                audio_html = f"""
+                <audio controls>
+                  <source src="data:audio/mp3;base64,{audio_base64}" type="audio/mp3">
+                  Your browser does not support the audio element.
+                </audio>
+                """
+                st.markdown(audio_html, unsafe_allow_html=True)
+
 
 # Initialize session state
 if 'scanned_words' not in st.session_state:
