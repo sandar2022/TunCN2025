@@ -5,3 +5,4 @@ pandas
 pytesseract
 Pillow
 google-cloud-translate
+google-cloud-vision
