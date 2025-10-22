@@ -386,7 +386,7 @@ if 'manual_words' not in st.session_state:
     st.session_state.manual_words = []
 
 # MAIN APP
-st.title("🔍 Chinese Dictionary Explorer")
+st.title("🔍 Chinese Dictionary Explorer for Beginner done by Sandar")
 st.markdown("Type Chinese words OR upload files to get meanings and audio pronunciation")
 
 # MANUAL TEXT INPUT
