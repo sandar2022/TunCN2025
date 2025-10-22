@@ -356,18 +356,20 @@ if st.session_state.offline_mode:
 
 # --- Manual Input (Chinese or English) ---
 st.header("📝 Type Chinese or English Text")
-manual_input = st.text_area(
-    "Enter Chinese or English text (separate words with spaces or new lines):",
-    placeholder="Examples: 你好 谢谢  学校  OR  good morning",
-    height=120,
-    key="manual_input_main"
-)
 
-col1, col2 = st.columns(2)
-with col1:
-    process_manual = st.button("✨ Process Text", type="primary", use_container_width=True)
-with col2:
-    clear_manual = st.button("🗑️ Clear Text", use_container_width=True)
+# Use a form to handle text input and buttons together
+with st.form("text_input_form", clear_on_submit=True):
+    manual_input = st.text_area(
+        "Enter Chinese or English text (separate words with spaces or new lines):",
+        placeholder="Examples: 你好 谢谢  学校  OR  good morning",
+        height=120
+    )
+    
+    col1, col2 = st.columns(2)
+    with col1:
+        process_manual = st.form_submit_button("✨ Process Text", type="primary", use_container_width=True)
+    with col2:
+        clear_manual = st.form_submit_button("🗑️ Clear Text", use_container_width=True)
 
 if process_manual and manual_input:
     with st.spinner("Processing text..."):
@@ -401,9 +403,19 @@ if process_manual and manual_input:
         st.warning("❌ No Chinese words found in the text")
 
 if clear_manual:
+    # Clear all relevant session state variables
     st.session_state.manual_words = []
-    st.rerun()
+    st.session_state.scanned_words = []
+    st.session_state.extracted_text = ""
+    st.session_state.last_translation = {"original": "", "translated": ""}
+    st.success("Text area cleared!")
 
+# Check if we need to clear the text area and reset the trigger
+if st.session_state.get('clear_text_trigger', False):
+    st.session_state.clear_text_trigger = False
+    # This will force a rerun with empty text
+    st.rerun()
+    
 # --- File Upload ---
 st.header("📎 Upload Image or Text File for OCR")
 st.markdown("Upload PNG/JPG images or TXT files. OCR uses Google Vision; if offline the app will notify and fallback to local where possible.")
